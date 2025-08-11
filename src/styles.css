@@ -1,0 +1,176 @@
+/* CSS Custom Properties for consistent values */
+:root {
+  --primary-bg: #121212;
+  --text-primary: white;
+  --text-secondary: lightgrey;
+  --accent-color: darkorange;
+  --success-color: limegreen;
+  --error-color: red;
+  --border-color: lightgrey;
+  --border-dark: darkgrey;
+  --spacing-xs: 12px;
+  --spacing-sm: 30px;
+  --spacing-md: 35px;
+  --spacing-lg: 45px;
+  --spacing-xl: 60px;
+  --font-size-base: 1.5em;
+  --font-size-large: 2rem;
+  --font-size-xl: 2.25rem;
+  --font-size-xxl: 3rem;
+  --border-radius: 60px;
+  --border-width: 3px;
+  --transition-duration: 0.3s;
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+}
+
+/* Main container styles */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-base);
+}
+
+/* Header styles */
+.app-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.app-header h1 {
+  font-size: var(--font-size-xxl);
+  margin: 0;
+}
+
+.app-header p {
+  font-size: var(--font-size-large);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+/* Main content area */
+.app-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 750px;
+}
+
+/* Button base styles - consolidated */
+.quiz-button,
+.restart-button {
+  font-family: "Times New Roman", Times, serif;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-xl);
+  border: var(--border-width) solid var(--border-color);
+  background-color: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-duration) ease;
+  border-radius: var(--border-radius);
+}
+
+.quiz-button:hover,
+.restart-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Button states - consolidated */
+.quiz-button.selected,
+.quiz-button.correct,
+.quiz-button.incorrect {
+  border-color: var(--border-dark);
+  color: var(--text-primary);
+}
+
+.quiz-button.selected {
+  background-color: var(--accent-color);
+}
+
+
+
+.quiz-button.correct {
+  background-color: var(--success-color);
+}
+
+
+
+.quiz-button.incorrect {
+  background-color: var(--error-color);
+}
+
+
+
+/* Button text styles - consolidated */
+.quiz-button .button-text,
+.quiz-button .button-prefix {
+  transition: color var(--transition-duration) ease;
+}
+
+.quiz-button .button-text {
+  color: var(--text-secondary);
+}
+
+.quiz-button .button-prefix {
+  color: var(--accent-color);
+}
+
+/* Selected state text colors */
+.quiz-button.selected .button-text,
+.quiz-button.selected .button-prefix,
+.quiz-button.correct .button-text,
+.quiz-button.correct .button-prefix,
+.quiz-button.incorrect .button-text,
+.quiz-button.incorrect .button-prefix {
+  color: rgb(12, 12, 12);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .app-header h1 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .app-header p {
+    font-size: var(--font-size-base);
+  }
+  
+  .quiz-button,
+  .restart-button {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-large);
+  }
+  
+  .app-main {
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 20px;
+  }
+  
+  .app-main {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

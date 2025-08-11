@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import questions from './questions.json'
+import './styles.css'
 
 function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -66,89 +67,71 @@ function App() {
 
   if (gameOver) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100"
-        onClick={() => {}}
-      >
-        <div className="w-full max-w-xl mx-auto p-6 text-center space-y-6">
-          <h1 className="text-3xl font-bold">Game Over</h1>
-          <button
-            onClick={restart}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors"
-          >
+      <div className="app-container">
+        <header className="app-header">
+          <h1>Game Over</h1>
+        </header>
+        <main>
+          <button className="restart-button" onClick={restart}>
             Restart
           </button>
-        </div>
+        </main>
       </div>
     )
   }
 
   if (quizComplete) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100"
-        onClick={() => {}}
-      >
-        <div className="w-full max-w-xl mx-auto p-6 text-center space-y-6">
-          <h1 className="text-3xl font-bold">Quiz Complete!</h1>
-          <button
-            onClick={restart}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors"
-          >
+      <div className="app-container">
+        <header className="app-header">
+          <h1>Quiz Complete!</h1>
+        </header>
+        <main>
+          <button className="restart-button" onClick={restart}>
             Restart
           </button>
-        </div>
+        </main>
       </div>
     )
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100"
-      onClick={handleGlobalClick}
-    >
-      <div className="w-full max-w-2xl mx-auto p-6">
-        <div className="space-y-6">
-          <div className="text-sm text-gray-400">Question {currentQuestionIndex + 1} of {questions.length}</div>
-          <h1 className="text-2xl md:text-3xl font-semibold leading-snug">
-            {current.question}
-          </h1>
+    <div className="app-container" onClick={handleGlobalClick}>
+      <header className="app-header">
+        <h1>
+          Question #{currentQuestionIndex + 1}
+        </h1>
+        <p>
+          {current.question}
+        </p>
+      </header>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            {current.options.map((option, idx) => {
-              let color = 'bg-gray-800 hover:bg-gray-700'
+      <main className="app-main">
+        {current.options.map((option, idx) => {
+          let buttonClass = 'quiz-button'
 
-              if (phase === 'selecting' || phase === 'pendingReveal') {
-                if (selectedIndex === idx) {
-                  color = 'bg-orange-600 hover:bg-orange-600'
-                }
-              } else if (phase === 'revealed') {
-                if (selectedIndex === idx) {
-                  color = isCorrect ? 'bg-green-600' : 'bg-red-600'
-                }
-              }
+          // Apply different classes based on phase and selection
+          if (phase === 'selecting' || phase === 'pendingReveal') {
+            if (selectedIndex === idx) {
+              buttonClass = 'quiz-button selected'
+            }
+          } else if (phase === 'revealed') {
+            if (selectedIndex === idx) {
+              buttonClass = isCorrect ? 'quiz-button correct' : 'quiz-button incorrect'
+            }
+          }
 
-              return (
-                <button
-                  key={idx}
-                  onClick={(e) => handleOptionClick(idx, e)}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ring-1 ring-white/10 ${color}`}
-                  aria-pressed={selectedIndex === idx}
-                >
-                  <span className="font-medium">{String.fromCharCode(65 + idx)}.</span>{' '}
-                  {option}
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="text-sm text-gray-400 pt-2">
-            {phase === 'selecting' && 'Click an option to select.'}
-            {phase === 'pendingReveal' && 'Click anywhere to reveal the answer.'}
-            {phase === 'revealed' && (isCorrect ? 'Correct! Click to continue.' : 'Incorrect. Click to end the game.')}
-          </div>
-        </div>
-      </div>
+          return (
+            <button
+              key={idx}
+              onClick={(e) => handleOptionClick(idx, e)}
+              className={buttonClass}
+            >
+              <span className="button-prefix">{String.fromCharCode(65 + idx)}:</span> <span className="button-text">{option}</span>
+            </button>
+          )
+        })}
+      </main>
     </div>
   )
 }
