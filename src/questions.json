@@ -1,0 +1,19 @@
+[
+  {
+    "question": "What is 2 + 2?",
+    "options": ["3", "4", "5", "6"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "options": ["Venus", "Mars", "Jupiter", "Mercury"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What color do you get by mixing red and blue?",
+    "options": ["Green", "Purple", "Orange", "Yellow"],
+    "correctIndex": 1
+  }
+]
+
+
