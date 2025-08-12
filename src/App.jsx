@@ -1,19 +1,42 @@
-import React, { useState } from 'react'
-import questions from './questions.json'
+import React, { useRef, useState } from 'react'
 import './styles.css'
 
 function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedIndex, setSelectedIndex] = useState(null)
-  const [phase, setPhase] = useState('selecting') // 'selecting' | 'pendingReveal' | 'revealed'
+  const [phase, setPhase] = useState('newGame') // 'newGame' | 'selecting' | 'pendingReveal' | 'revealed'
   const [isCorrect, setIsCorrect] = useState(null) // true | false | null
-  const [gameOver, setGameOver] = useState(false)
-  const [quizComplete, setQuizComplete] = useState(false)
+  const [questionsList, setQuestionsList] = useState(null)
+  const fileInputRef = useRef(null)
 
-  const current = questions[currentQuestionIndex]
+  function loadQuestionsFromFile(event) {
+    const file = event.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = function(e) {
+        try {
+          const loadedQuestions = JSON.parse(e.target.result)
+          if (Array.isArray(loadedQuestions) && loadedQuestions.length > 0) {
+            setQuestionsList(loadedQuestions)
+            setCurrentQuestionIndex(0)
+            setSelectedIndex(null)
+            setPhase('selecting')
+            setIsCorrect(null)
+            alert(`Successfully loaded ${loadedQuestions.length} questions!`)
+          } else {
+            alert('Invalid questions format. Please ensure the JSON contains an array of questions.')
+          }
+        } catch (error) {
+          alert('Error parsing JSON file. Please check the file format.')
+          console.error('JSON parsing error:', error)
+        }
+      }
+      reader.readAsText(file)
+    }
+  }
 
   function handleOptionClick(optionIndex, e) {
-    if (gameOver || quizComplete) return
+    if (!questionsList || phase !== 'selecting') return
 
     // First click: choose and lock selection, highlight orange
     if (phase === 'selecting' && selectedIndex === null) {
@@ -28,10 +51,11 @@ function App() {
   }
 
   function handleGlobalClick() {
-    if (gameOver || quizComplete) return
+    if (!questionsList) return
 
     // Second click anywhere: reveal correctness
     if (phase === 'pendingReveal' && selectedIndex !== null) {
+      const current = questionsList[currentQuestionIndex]
       const correct = current.correctIndex === selectedIndex
       setIsCorrect(correct)
       setPhase('revealed')
@@ -40,10 +64,11 @@ function App() {
 
     // Third click: advance or game over
     if (phase === 'revealed') {
+      const current = questionsList[currentQuestionIndex]
       if (isCorrect) {
         const nextIndex = currentQuestionIndex + 1
-        if (nextIndex >= questions.length) {
-          setQuizComplete(true)
+        if (nextIndex >= questionsList.length) {
+          setPhase('newGame')
         } else {
           setCurrentQuestionIndex(nextIndex)
         }
@@ -51,7 +76,7 @@ function App() {
         setIsCorrect(null)
         setPhase('selecting')
       } else {
-        setGameOver(true)
+        setPhase('newGame')
       }
     }
   }
@@ -59,40 +84,35 @@ function App() {
   function restart() {
     setCurrentQuestionIndex(0)
     setSelectedIndex(null)
-    setPhase('selecting')
+    setPhase('newGame')
     setIsCorrect(null)
-    setGameOver(false)
-    setQuizComplete(false)
+    setQuestionsList(null)
   }
 
-  if (gameOver) {
+  const renderNewGameScreen = () => {
     return (
       <div className="app-container">
-        <header className="app-header">
-          <h1>Game Over</h1>
-        </header>
-        <main>
-          <button className="restart-button" onClick={restart}>
-            Restart
+        <main className="app-main">
+          <button
+            className="restart-button"
+            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+          >
+            Load questions
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={loadQuestionsFromFile}
+            style={{ display: 'none' }}
+          />
         </main>
       </div>
     )
   }
 
-  if (quizComplete) {
-    return (
-      <div className="app-container">
-        <header className="app-header">
-          <h1>Quiz Complete!</h1>
-        </header>
-        <main>
-          <button className="restart-button" onClick={restart}>
-            Restart
-          </button>
-        </main>
-      </div>
-    )
+  if (phase === 'newGame') {
+    return renderNewGameScreen()
   }
 
   return (
@@ -102,12 +122,12 @@ function App() {
           Question #{currentQuestionIndex + 1}
         </h1>
         <p>
-          {current.question}
+          {questionsList[currentQuestionIndex].question}
         </p>
       </header>
 
       <main className="app-main">
-        {current.options.map((option, idx) => {
+        {questionsList[currentQuestionIndex].options.map((option, idx) => {
           let buttonClass = 'quiz-button'
 
           // Apply different classes based on phase and selection
@@ -132,6 +152,7 @@ function App() {
           )
         })}
       </main>
+
     </div>
   )
 }

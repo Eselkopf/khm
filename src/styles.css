@@ -174,3 +174,49 @@ body {
     gap: 20px;
   }
 }
+
+/* Load questions section styles */
+.load-questions-container {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  padding: var(--spacing-md);
+  border-top: var(--border-width) solid var(--border-color);
+  width: 100%;
+  max-width: 750px;
+}
+
+.load-questions-container h2 {
+  font-size: var(--font-size-large);
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-secondary);
+}
+
+.load-questions-container input[type="file"] {
+  background-color: transparent;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all var(--transition-duration) ease;
+}
+
+.load-questions-container input[type="file"]:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-color);
+}
+
+.load-questions-container input[type="file"]::-webkit-file-upload-button {
+  background-color: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all var(--transition-duration) ease;
+}
+
+.load-questions-container input[type="file"]::-webkit-file-upload-button:hover {
+  color: var(--accent-color);
+}
