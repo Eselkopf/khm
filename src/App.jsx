@@ -1,13 +1,17 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import './styles.css'
+import NewGameScreen from './components/NewGameScreen.jsx'
+import QuizHeader from './components/QuizHeader.jsx'
+import OptionsList from './components/OptionsList.jsx'
+import GameOverScreen from './components/GameOverScreen.jsx'
+import QuizCompletedScreen from './components/QuizCompletedScreen.jsx'
 
 function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedIndex, setSelectedIndex] = useState(null)
-  const [phase, setPhase] = useState('newGame') // 'newGame' | 'selecting' | 'pendingReveal' | 'revealed'
+  const [phase, setPhase] = useState('newGame') // 'newGame' | 'selecting' | 'pendingReveal' | 'revealed' | 'gameOver' | 'quizCompleted'
   const [isCorrect, setIsCorrect] = useState(null) // true | false | null
   const [questionsList, setQuestionsList] = useState(null)
-  const fileInputRef = useRef(null)
 
   function loadQuestionsFromFile(event) {
     const file = event.target.files[0]
@@ -62,13 +66,16 @@ function App() {
       return
     }
 
-    // Third click: advance or game over
+    // Third click: advance or game over / completed
     if (phase === 'revealed') {
       const current = questionsList[currentQuestionIndex]
       if (isCorrect) {
         const nextIndex = currentQuestionIndex + 1
         if (nextIndex >= questionsList.length) {
-          setPhase('newGame')
+          setSelectedIndex(null)
+          setIsCorrect(null)
+          setPhase('quizCompleted')
+          return
         } else {
           setCurrentQuestionIndex(nextIndex)
         }
@@ -76,7 +83,7 @@ function App() {
         setIsCorrect(null)
         setPhase('selecting')
       } else {
-        setPhase('newGame')
+        setPhase('gameOver')
       }
     }
   }
@@ -89,70 +96,32 @@ function App() {
     setQuestionsList(null)
   }
 
-  const renderNewGameScreen = () => {
-    return (
-      <div className="app-container">
-        <main className="app-main">
-          <button
-            className="restart-button"
-            onClick={() => fileInputRef.current && fileInputRef.current.click()}
-          >
-            Load questions
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            onChange={loadQuestionsFromFile}
-            style={{ display: 'none' }}
-          />
-        </main>
-      </div>
-    )
+  if (phase === 'newGame') {
+    return <NewGameScreen onFileChange={loadQuestionsFromFile} />
   }
 
-  if (phase === 'newGame') {
-    return renderNewGameScreen()
+  if (phase === 'gameOver') {
+    return <GameOverScreen onRestart={restart} />
+  }
+
+  if (phase === 'quizCompleted') {
+    return <QuizCompletedScreen onRestart={restart} />
   }
 
   return (
     <div className="app-container" onClick={handleGlobalClick}>
-      <header className="app-header">
-        <h1>
-          Question #{currentQuestionIndex + 1}
-        </h1>
-        <p>
-          {questionsList[currentQuestionIndex].question}
-        </p>
-      </header>
-
-      <main className="app-main">
-        {questionsList[currentQuestionIndex].options.map((option, idx) => {
-          let buttonClass = 'quiz-button'
-
-          // Apply different classes based on phase and selection
-          if (phase === 'selecting' || phase === 'pendingReveal') {
-            if (selectedIndex === idx) {
-              buttonClass = 'quiz-button selected'
-            }
-          } else if (phase === 'revealed') {
-            if (selectedIndex === idx) {
-              buttonClass = isCorrect ? 'quiz-button correct' : 'quiz-button incorrect'
-            }
-          }
-
-          return (
-            <button
-              key={idx}
-              onClick={(e) => handleOptionClick(idx, e)}
-              className={buttonClass}
-            >
-              <span className="button-prefix">{String.fromCharCode(65 + idx)}:</span> <span className="button-text">{option}</span>
-            </button>
-          )
-        })}
-      </main>
-
+      <QuizHeader
+        questionNumber={currentQuestionIndex + 1}
+        text={questionsList[currentQuestionIndex].question}
+      />
+      <OptionsList
+        options={questionsList[currentQuestionIndex].options}
+        selectedIndex={selectedIndex}
+        isRevealed={phase === 'revealed'}
+        isCorrect={isCorrect}
+        phase={phase}
+        onOptionClick={handleOptionClick}
+      />
     </div>
   )
 }
