@@ -1,15 +1,18 @@
 {
   "name": "quiz-app",
+  "homepage": "https://eselkopf.github.io/khm/",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 5173"
+    "preview": "vite preview --port 5173",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "gh-pages": "^6.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
