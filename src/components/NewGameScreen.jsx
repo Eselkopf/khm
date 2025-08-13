@@ -13,7 +13,7 @@ function NewGameScreen({ onFileChange }) {
     <div className="app-container">
       <main className="app-main">
         <button className="restart-button" onClick={openFileDialog}>
-          Load questions
+          Загрузить вопросы
         </button>
         <input
           ref={fileInputRef}
